@@ -1,0 +1,40 @@
+[
+	{
+		"__TYPE__": "SharedSliceContent",
+		"variation": "default",
+		"primary": {
+			"heading": {
+				"__TYPE__": "StructuredTextContent",
+				"value": [
+					{
+						"type": "heading1",
+						"content": {
+							"text": "Street"
+						}
+					}
+				]
+			},
+			"body": {
+				"__TYPE__": "StructuredTextContent",
+				"value": [
+					{
+						"type": "paragraph",
+						"content": {
+							"text": "Dolor est anim exercitation minim consequat aliquip tempor exercitation culpa deserunt elit reprehenderit magna Lorem cupidatat. Velit elit et Lorem ullamco officia dolore labore aute commodo consequat. Laborum dolore reprehenderit nisi veniam consectetur duis veniam dolore."
+						}
+					}
+				]
+			},
+			"button": {
+				"__TYPE__": "LinkContent",
+				"key": "37c1ff98-385f-492f-879c-d04ca7c51b92",
+				"value": {
+					"__TYPE__": "ExternalLink",
+					"url": "http://google.com",
+					"text": "remove"
+				}
+			}
+		},
+		"items": []
+	}
+]
