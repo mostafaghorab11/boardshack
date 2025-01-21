@@ -11,8 +11,6 @@ export default async function Page() {
   const page = await client.getSingle("homepage");
   const slices = bundleTextAndImageSlices(page.data.slices);
 
-  console.log(slices);
-
   return (
     <SliceZone
       slices={slices}
