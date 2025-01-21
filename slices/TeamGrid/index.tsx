@@ -17,12 +17,12 @@ export type TeamGridProps = SliceComponentProps<Content.TeamGridSlice>;
 const TeamGrid = async ({ slice }: TeamGridProps): Promise<JSX.Element> => {
   const client = createClient();
   const skaters = await client.getAllByType("skater");
-  
+
   return (
     <Bounded
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
-      className="bg-brand-navy"
+      className="bg-texture bg-brand-navy"
     >
       <Heading as="h2" size="lg" className="mb-8 text-center text-white">
         <PrismicText field={slice.primary.heading} />
