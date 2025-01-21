@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .bg-texture {
-  background-image: url('/bg-texture.webp');
+  background-image: url("/bg-texture.webp");
   background-size: 720px 460px;
   background-repeat: repeat;
   background-position: center;
@@ -87,4 +87,11 @@
 .slide-in-hidden {
   opacity: 0;
   transform: translateX(-100px);
+}
+
+@keyframes slide-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
