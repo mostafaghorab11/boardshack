@@ -45,18 +45,26 @@ function Scene({
   wheelTextureURL,
 }: Props) {
   const containerRef = useRef<THREE.Group>(null);
+  const originRef = useRef<THREE.Group>(null);
 
   function onClick(event: ThreeEvent<MouseEvent>) {
     event.stopPropagation();
 
     const board = containerRef.current;
+    const origin = originRef.current;
 
-    if (!board) return;
+    if (!board || !origin) return;
 
     const { name } = event.object;
 
     if (name === "back") {
       ollie(board);
+    }
+    if (name === "middle") {
+      kickFlip(board);
+    }
+    if (name === "front") {
+      frontSide360(board, origin);
     }
   }
 
@@ -98,36 +106,100 @@ function Scene({
       });
   }
 
+  function kickFlip(board: THREE.Group) {
+    jumbBoard(board);
+
+    gsap
+      .timeline()
+      .to(board.rotation, {
+        x: -0.6,
+        duration: 0.26,
+        ease: "none",
+      })
+      .to(board.rotation, {
+        x: 0.4,
+        duration: 0.82,
+        ease: "power2.in",
+      })
+      .to(
+        board.rotation,
+        {
+          z: `+=${Math.PI * 2}`,
+          ease: "none",
+          duration: 0.78,
+        },
+        0.3,
+      )
+      .to(board.rotation, {
+        x: 0,
+        duration: 0.12,
+        ease: "none",
+      });
+  }
+
+  function frontSide360(board: THREE.Group, origin: THREE.Group) {
+    jumbBoard(board);
+
+    gsap
+      .timeline()
+      .to(board.rotation, {
+        x: -0.6,
+        duration: 0.26,
+        ease: "none",
+      })
+      .to(board.rotation, {
+        x: 0.4,
+        duration: 0.82,
+        ease: "power2.in",
+      })
+      .to(
+        origin.rotation,
+        {
+          y: `+=${Math.PI * 2}`,
+          ease: "none",
+          duration: 0.77,
+        },
+        0.3,
+      )
+      .to(board.rotation, {
+        x: 0,
+        duration: 0.14,
+        ease: "none",
+      });
+  }
+
   return (
     <group>
       <OrbitControls />
       <Environment files={"/hdr/warehouse-256.hdr"} />
-      <group ref={containerRef} position={[-0.25, 0, -0.635]}>
-        <group position={[0, -0.086, 0.635]}>
-          <Skateboard
-            deckTextureURL={deckTextureURL}
-            deckTextureURLs={[deckTextureURL]}
-            wheelTextureURL={wheelTextureURL}
-            wheelTextureURLs={[wheelTextureURL]}
-            boltColor={boltColor}
-            truckColor={truckColor}
-            constantWheelSpin
-          />
+      <group ref={originRef}>
+        <group ref={containerRef} position={[-0.25, 0, -0.635]}>
+          <group position={[0, -0.086, 0.635]}>
+            <Skateboard
+              deckTextureURL={deckTextureURL}
+              deckTextureURLs={[deckTextureURL]}
+              wheelTextureURL={wheelTextureURL}
+              wheelTextureURLs={[wheelTextureURL]}
+              boltColor={boltColor}
+              truckColor={truckColor}
+              constantWheelSpin
+            />
 
-          <mesh name="front" position={[0, 0.27, 0.9]} onClick={onClick}>
-            <boxGeometry args={[0.6, 0.2, 0.58]} />
-            <meshStandardMaterial visible={false} />
-          </mesh>
+            <mesh name="front" position={[0, 0.27, 0.9]} onClick={onClick}>
+              <boxGeometry args={[0.6, 0.2, 0.58]} />
+              <meshStandardMaterial visible={false} />
+            </mesh>
 
-          <mesh name="middle" position={[0, 0.27, 0]} onClick={onClick}>
-            <boxGeometry args={[0.6, 0.1, 1.2]} />
-            <meshStandardMaterial visible={false} />
-          </mesh>
+            <mesh name="middle" position={[0, 0.27, 0]} onClick={onClick}>
+              <boxGeometry args={[0.6, 0.1, 1.2]} />
+              <meshStandardMaterial visible={false} />
+            </mesh>
 
-          <mesh name="back" position={[0, 0.27, -0.9]} onClick={onClick}>
-            <boxGeometry args={[0.6, 0.2, 0.58]} />
-            <meshStandardMaterial visible={false} />
-          </mesh>
+            <mesh name="back" position={[0, 0.27, -0.9]} onClick={onClick}>
+              <boxGeometry args={[0.6, 0.2, 0.58]} />
+              <meshStandardMaterial visible={false} />
+            </mesh>
+          </group>
         </group>
       </group>
       <ContactShadows opacity={0.6} position={[0, -0.08, 0]} />
