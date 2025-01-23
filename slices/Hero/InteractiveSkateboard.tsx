@@ -1,10 +1,13 @@
 "use client";
 import { Skateboard } from "@/components/Skateboard";
-import { ContactShadows, Environment, OrbitControls } from "@react-three/drei";
-import { Canvas, ThreeEvent } from "@react-three/fiber";
+import { ContactShadows, Environment } from "@react-three/drei";
+import { Canvas, ThreeEvent, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import Hotspot from "./Hotspot";
+
+const INITIAL_CAMERA_POSITION = [1.5, 1, 1.4] as const;
 
 type Props = {
   deckTextureURL: string;
@@ -23,7 +26,7 @@ export default function InteractiveSkateboard({
     <div className="absolute inset-0 z-10 flex items-center justify-center">
       <Canvas
         className="min-h-[60rem] w-full"
-        camera={{ position: [1.5, 1, 1.4], fov: 55 }}
+        camera={{ position: INITIAL_CAMERA_POSITION, fov: 55 }}
       >
         <Suspense>
           <Scene
@@ -44,8 +47,35 @@ function Scene({
   truckColor,
   wheelTextureURL,
 }: Props) {
+  const [showHotspot, setShowHotspot] = useState({
+    front: true,
+    middle: true,
+    back: true,
+  });
+  const [isAnimating, setIsAnimating] = useState(false);
+
   const containerRef = useRef<THREE.Group>(null);
   const originRef = useRef<THREE.Group>(null);
+
+  const { camera } = useThree();
+
+  useEffect(() => {
+    camera.lookAt(new THREE.Vector3(-0.2, 0.15, 0));
+
+    window.addEventListener("resize", setZoom);
+
+    setZoom();
+
+    function setZoom() {
+      const scale = Math.max(Math.min(1000 / window.innerWidth, 2.2), 1);
+
+      camera.position.x = INITIAL_CAMERA_POSITION[0] * scale;
+      camera.position.y = INITIAL_CAMERA_POSITION[1] * scale;
+      camera.position.z = INITIAL_CAMERA_POSITION[2] * scale;
+    }
+
+    return () => window.removeEventListener("resize", setZoom);
+  }, [camera]);
 
   function onClick(event: ThreeEvent<MouseEvent>) {
     event.stopPropagation();
@@ -53,9 +83,11 @@ function Scene({
     const board = containerRef.current;
     const origin = originRef.current;
 
-    if (!board || !origin) return;
+    if (!board || !origin || isAnimating) return;
 
     const { name } = event.object;
+
+    setShowHotspot((current) => ({ ...current, [name]: false }));
 
     if (name === "back") {
       ollie(board);
@@ -69,8 +101,13 @@ function Scene({
   }
 
   function jumbBoard(board: THREE.Group) {
+    setIsAnimating(true);
     gsap
-      .timeline()
+      .timeline({
+        onComplete: () => {
+          setIsAnimating(false);
+        },
+      })
       .to(board.position, {
         y: 0.8,
         duration: 0.51,
@@ -170,7 +207,6 @@ function Scene({
 
   return (
     <group>
-      <OrbitControls />
       <Environment files={"/hdr/warehouse-256.hdr"} />
       <group ref={originRef}>
         <group ref={containerRef} position={[-0.25, 0, -0.635]}>
@@ -185,16 +221,31 @@ function Scene({
               constantWheelSpin
             />
 
+            <Hotspot
+              position={[0, 0.38, 1]}
+              color="#B8FC39"
+              isVisible={!isAnimating && showHotspot.front}
+            />
             <mesh name="front" position={[0, 0.27, 0.9]} onClick={onClick}>
               <boxGeometry args={[0.6, 0.2, 0.58]} />
               <meshStandardMaterial visible={false} />
             </mesh>
 
+            <Hotspot
+              color="#FF7A51"
+              isVisible={!isAnimating && showHotspot.middle}
+              position={[0, 0.33, 0]}
+            />
             <mesh name="middle" position={[0, 0.27, 0]} onClick={onClick}>
               <boxGeometry args={[0.6, 0.1, 1.2]} />
               <meshStandardMaterial visible={false} />
             </mesh>
 
+            <Hotspot
+              color="#46ACFA"
+              isVisible={!isAnimating && showHotspot.back}
+              position={[0, 0.35, -0.9]}
+            />
             <mesh name="back" position={[0, 0.27, -0.9]} onClick={onClick}>
               <boxGeometry args={[0.6, 0.2, 0.58]} />
               <meshStandardMaterial visible={false} />
