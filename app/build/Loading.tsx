@@ -3,9 +3,7 @@ import { Logo } from "@/components/Logo";
 import { useProgress } from "@react-three/drei";
 import clsx from "clsx";
 
-type Props = {};
-
-export default function Loading({}: Props) {
+export default function Loading() {
   const { progress } = useProgress();
   return (
     <div
