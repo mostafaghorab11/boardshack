@@ -6,6 +6,7 @@ import { asImageSrc } from "@prismicio/client";
 import Link from "next/link";
 import { CustomizerControlsProvider } from "./context";
 import Controls from "./Controls";
+import Loading from "./Loading";
 import Preview from "./Preview";
 
 type SearchParams = {
@@ -75,6 +76,7 @@ export default async function Page(props: {
           </ButtonLink>
         </div>
       </CustomizerControlsProvider>
+      <Loading />
     </div>
   );
 }
