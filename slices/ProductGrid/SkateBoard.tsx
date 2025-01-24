@@ -74,7 +74,9 @@ export default async function SkateBoard({ id }: Props) {
       </h3>
 
       <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <ButtonLink field={product.data.customizer_link}>Customize</ButtonLink>
+        <ButtonLink field={product.data.customizer_link}>
+          {product.data.customizer_link.text}
+        </ButtonLink>
       </div>
     </div>
   );
